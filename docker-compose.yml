@@ -1,0 +1,6 @@
+﻿services:
+  moodtracker.api:
+    image: moodtracker.api
+    build:
+      context: .
+      dockerfile: MoodTracker.Api/Dockerfile
