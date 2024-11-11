@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MoodTracker.Api.Configuration;
-using MoodTracker.Api.Entities;
+using MoodTracker.Api.Database;
 using MoodTracker.Api.Infra.Auth;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -24,7 +24,8 @@ builder.Services.AddControllers()
     });
 
 // Add http context accessor
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+// builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddHttpContextAccessor();
 
 // Add db context to services.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

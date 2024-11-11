@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MoodTracker.Api.Entities;
+using MoodTracker.Api.Database;
 using MoodTracker.Api.Models;
 
 namespace MoodTracker.Api.Controllers;
@@ -12,7 +12,8 @@ namespace MoodTracker.Api.Controllers;
 public class MoodController(
     ApplicationDbContext context,
     IMapper mapper,
-    ILogger<MoodController> logger) : ControllerBase
+    ILogger<MoodController> logger
+) : ControllerBase
 {
     [HttpPost]
     public ActionResult<MoodDto> CreateMood(MoodDto mood)

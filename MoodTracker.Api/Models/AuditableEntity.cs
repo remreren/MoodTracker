@@ -1,6 +1,6 @@
 using MoodTracker.Api.Infra.Attributes;
 
-namespace MoodTracker.Api.Entities;
+namespace MoodTracker.Api.Models;
 
 public abstract class AuditableEntity
 {

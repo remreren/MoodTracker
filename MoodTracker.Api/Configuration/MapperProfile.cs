@@ -1,5 +1,4 @@
 using AutoMapper;
-using MoodTracker.Api.Entities;
 using MoodTracker.Api.Models;
 
 namespace MoodTracker.Api.Configuration;
