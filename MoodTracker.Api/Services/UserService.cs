@@ -18,9 +18,9 @@ public class UserService(
         context.Users.Add(user);
         context.SaveChanges();
 
-        // var token = authService.GenerateJwtToken(user);
+        var token = authService.GenerateJwtToken(user);
 
-        return new AuthResponse { Username = user.Username, Token = "token" };
+        return new AuthResponse { Username = user.Username, Token = token };
     }
 
     public AuthResponse? Login(AuthDto model)
@@ -30,8 +30,8 @@ public class UserService(
         if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             return null;
 
-        // var token = authService.GenerateJwtToken(user);
+        var token = authService.GenerateJwtToken(user);
 
-        return new AuthResponse { Username = user.Username, Token = "token" };
+        return new AuthResponse { Username = user.Username, Token = token };
     }
 }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,8 +19,11 @@ public class MoodController(
     [HttpPost]
     public ActionResult<MoodDto> CreateMood(MoodDto mood)
     {
-        var moodEntity = mapper.Map<MoodDto, Mood>(mood);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
+        var moodEntity = mapper.Map<MoodDto, Mood>(mood);
+        moodEntity.UserId = int.Parse(userId);
+        
         context.Moods.Add(moodEntity);
         context.SaveChanges();
 

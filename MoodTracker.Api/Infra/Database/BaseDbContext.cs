@@ -39,7 +39,7 @@ public class BaseDbContext(
                     continue;
                 }
 
-                var email = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email)?.Value!;
+                var email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
                 SetPropertyWithAttribute<CreatedByAttribute>(entry, email);
                 SetPropertyWithAttribute<LastUpdatedByAttribute>(entry, email);
@@ -53,7 +53,7 @@ public class BaseDbContext(
                     continue;
                 }
 
-                var email = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email)?.Value!;
+                var email = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
                 SetPropertyWithAttribute<LastUpdatedByAttribute>(entry, email);
             }

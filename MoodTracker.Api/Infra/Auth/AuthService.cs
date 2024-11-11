@@ -1,21 +1,21 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using MoodTracker.Api.Models;
 
 namespace MoodTracker.Api.Infra.Auth;
 
 public class AuthService(IConfiguration configuration)
 {
-    public string GenerateJwtToken(IdentityUser user)
+    public string GenerateJwtToken(User user)
     {
         var jwtSettings = configuration.GetSection("JwtSettings");
 
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Name, user.Username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

@@ -1,12 +1,12 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MoodTracker.Api.Configuration;
 using MoodTracker.Api.Database;
 using MoodTracker.Api.Infra.Auth;
+using MoodTracker.Api.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -35,11 +35,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Add auth service to ioc container
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
 
 // Set Identity source
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+// builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+//     .AddEntityFrameworkStores<ApplicationDbContext>()
+//     .AddDefaultTokenProviders();
 
 // configure JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
