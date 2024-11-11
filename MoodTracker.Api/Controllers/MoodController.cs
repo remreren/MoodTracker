@@ -1,12 +1,14 @@
 using AutoMapper;
-using MoodTracker.Api.Controllers.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoodTracker.Api.Entities;
+using MoodTracker.Api.Models;
 
 namespace MoodTracker.Api.Controllers;
 
+[Authorize]
 [ApiController]
-[Route("/api/v1/moods")]
+[Route("api/v1/moods")]
 public class MoodController(
     ApplicationDbContext context,
     IMapper mapper,
@@ -26,9 +28,9 @@ public class MoodController(
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<Mood>> ListMoods()
+    public ActionResult<IEnumerable<MoodDto>> ListMoods()
     {
-        return context.Moods.ToList();
+        return context.Moods.Select(mapper.Map<Mood, MoodDto>).ToList();
     }
 
     [HttpGet("{id}")]

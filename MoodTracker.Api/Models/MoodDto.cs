@@ -1,7 +1,7 @@
 using MoodTracker.Api.Infra.Configuration;
 using Newtonsoft.Json;
 
-namespace MoodTracker.Api.Controllers.Models;
+namespace MoodTracker.Api.Models;
 
 public class MoodDto
 {

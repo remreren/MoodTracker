@@ -1,9 +1,16 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using MoodTracker.Api.Infra.Attributes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace MoodTracker.Api.Infra.Database;
 
-public class BaseDbContext(DbContextOptions options) : DbContext(options)
+public class BaseDbContext(
+    DbContextOptions options,
+    IHttpContextAccessor httpContextAccessor
+) : IdentityDbContext<IdentityUser>(options)
 {
     public override int SaveChanges()
     {
@@ -26,15 +33,35 @@ public class BaseDbContext(DbContextOptions options) : DbContext(options)
             {
                 SetPropertyWithAttribute<CreatedAtAttribute>(entry, time);
                 SetPropertyWithAttribute<UpdatedAtAttribute>(entry, time);
+
+                if (httpContextAccessor.HttpContext?.User == null)
+                {
+                    continue;
+                }
+
+                var email = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email)?.Value!;
+
+                SetPropertyWithAttribute<CreatedByAttribute>(entry, email);
+                SetPropertyWithAttribute<LastUpdatedByAttribute>(entry, email);
             }
             else if (entry.State == EntityState.Modified)
             {
                 SetPropertyWithAttribute<UpdatedAtAttribute>(entry, time);
+
+                if (httpContextAccessor.HttpContext?.User == null)
+                {
+                    continue;
+                }
+
+                var email = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email)?.Value!;
+
+                SetPropertyWithAttribute<LastUpdatedByAttribute>(entry, email);
             }
         }
     }
 
-    private static void SetPropertyWithAttribute<TAttribute>(Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry, DateTime value) where TAttribute : Attribute
+    private static void SetPropertyWithAttribute<TAttribute>(EntityEntry entry, object value)
+        where TAttribute : Attribute
     {
         var properties = entry.Entity.GetType().GetProperties()
             .Where(p => Attribute.IsDefined(p, typeof(TAttribute)));

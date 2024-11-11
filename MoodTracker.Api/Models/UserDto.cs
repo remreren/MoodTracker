@@ -1,4 +1,4 @@
-namespace MoodTracker.Api.Controllers.Models;
+namespace MoodTracker.Api.Models;
 
 public class UserDto
 {

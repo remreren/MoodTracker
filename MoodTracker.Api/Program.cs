@@ -1,15 +1,21 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MoodTracker.Api.Configuration;
 using MoodTracker.Api.Entities;
+using MoodTracker.Api.Infra.Auth;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 [assembly: ApiController]
 
-
+// Create api builder
 var builder = WebApplication.CreateBuilder(args);
 
+// Find service controllers and add them to the builder
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
@@ -17,17 +23,49 @@ builder.Services.AddControllers()
         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
     });
 
+// Add http context accessor
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+// Add db context to services.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-builder.Services.AddAutoMapper(typeof(MapperProfile));
-builder.Services.AddLogging(config => config.AddConsole());
 
-// builder.Services.ConfigureHttpJsonOptions(options =>
-// {
-//     options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
-// });
+// Add auth service to ioc container
+builder.Services.AddScoped<AuthService>();
+
+// Set Identity source
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// configure JWT
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]))
+        };
+    });
+
+// Add auto mapper to services
+builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+// Add logging to services
+builder.Services.AddLogging(config => config.AddConsole());
 
 var app = builder.Build();
 
